@@ -23,6 +23,6 @@ fn find_content_in_file() -> Result<()> {
     cmd.arg("42").arg(file.path());
     cmd.assert()
         .success()
-        .stdout(predicate::str::contains("42"));
+        .stdout(predicate::str::contains("2: 42."));
     Ok(())
 }
