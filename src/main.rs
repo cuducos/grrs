@@ -1,6 +1,6 @@
-use std::io::{self, Write};
 use anyhow::{Context, Result};
 use clap::Parser;
+use std::io;
 
 /// Search for a pattern in a file and display the lines that contain it.
 #[derive(Parser)]
@@ -12,9 +12,6 @@ struct Cli {
 }
 
 fn main() -> Result<()> {
-    let stdout = io::stdout();
-    let mut handle = io::BufWriter::new(stdout);
-
     let args = Cli::parse();
     let content = std::fs::read_to_string(&args.path).with_context(|| {
         format!(
@@ -23,11 +20,10 @@ fn main() -> Result<()> {
         )
     })?;
 
-    for line in content.lines() {
-        if line.contains(&args.pattern) {
-            writeln!(handle, "{}", line)?;
-        }
-    }
+    let stdout = io::stdout();
+    let writer = io::BufWriter::new(stdout);
+    grrs::find_matches(writer, &content, &args.pattern)
+        .with_context(|| format!("Error searching for `{}`", &args.pattern))?;
 
     return Ok(());
 }
