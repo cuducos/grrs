@@ -8,9 +8,9 @@ use std::process::Command;
 fn file_does_not_exist() -> Result<()> {
     let mut cmd = Command::cargo_bin("grrs")?;
     cmd.arg("foobar").arg("this.does/not.exit");
-    cmd.assert().failure().stderr(predicate::str::contains(
-        "Error reading file: this.does/not.exit",
-    ));
+    cmd.assert()
+        .failure()
+        .stderr(predicate::str::contains("Error opening this.does/not.exit"));
     Ok(())
 }
 

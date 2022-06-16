@@ -13,17 +13,17 @@ struct Cli {
 
 fn main() -> Result<()> {
     let args = Cli::parse();
-    let content = std::fs::read_to_string(&args.path).with_context(|| {
-        format!(
-            "Error reading file: {}",
-            &args.path.into_os_string().into_string().unwrap(),
-        )
-    })?;
 
     let stdout = io::stdout();
     let writer = io::BufWriter::new(stdout);
-    grrs::find_matches(writer, &content, &args.pattern)
-        .with_context(|| format!("Error searching for `{}`", &args.pattern))?;
+
+    grrs::find_matches(writer, &args.path, &args.pattern).with_context(|| {
+        format!(
+            "Error searching for `{}` in {}",
+            &args.pattern,
+            &args.path.display()
+        )
+    })?;
 
     return Ok(());
 }
