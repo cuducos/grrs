@@ -1,3 +1,4 @@
+use std::io::{self, Write};
 use anyhow::{Context, Result};
 use clap::Parser;
 
@@ -11,6 +12,9 @@ struct Cli {
 }
 
 fn main() -> Result<()> {
+    let stdout = io::stdout();
+    let mut handle = io::BufWriter::new(stdout);
+
     let args = Cli::parse();
     let content = std::fs::read_to_string(&args.path).with_context(|| {
         format!(
@@ -21,7 +25,7 @@ fn main() -> Result<()> {
 
     for line in content.lines() {
         if line.contains(&args.pattern) {
-            println!("{}", line);
+            writeln!(handle, "{}", line)?;
         }
     }
 
